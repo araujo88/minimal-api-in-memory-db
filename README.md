@@ -1,6 +1,6 @@
 # minimal-api-in-memory-db
 
-In-memory database RESTful API with in-memory database implemented via linked lists implemented in C language using Unix websockets for networking and POSIX for multithreading.
+A minimal RESTful API with in-memory database implemented via linked lists implemented in C language using Unix websockets for networking and POSIX for multithreading.
 
 ## Running on Docker
 
