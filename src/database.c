@@ -42,23 +42,30 @@ void get_user(unsigned int id, char *buffer)
     }
 }
 
-void insert_user(user User)
+void create_user(user User, char *buffer)
 {
     insert_at_head(&head, create_new_node(global_id, User));
     global_id++;
+    if (buffer != NULL)
+    {
+        sprintf(buffer + strlen(buffer), "{\"msg\": \"user created\"}");
+    }
 }
 
-void update_user(unsigned int id, user User)
+void update_user(unsigned int id, user User, char *buffer)
 {
     node_t *tmp;
     tmp = find_node(head, id);
     if (tmp != NULL)
     {
         tmp->User = User;
+        sprintf(buffer + strlen(buffer), "{\"msg\": \"user updated\"}");
+        db_sucess("Node updated");
     }
     else
     {
         db_error("Node not found");
+        sprintf(buffer + strlen(buffer), "{\"msg\": \"user not found\"}");
     }
 }
 

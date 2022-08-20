@@ -6,8 +6,8 @@
 
 void get_users(char *buffer);
 void get_user(unsigned int id, char *buffer);
-void insert_user(user User);
-void update_user(unsigned int id, user User);
+void create_user(user User, char *buffer);
+void update_user(unsigned int id, user User, char *buffer);
 void delete_user(unsigned int id, char *buffer);
 
 #endif

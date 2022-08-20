@@ -12,14 +12,14 @@ int main(int argc, char *argv[])
 
     // test user insertion
     user user1;
-    user1.name = "John";
-    user1.surname = "Doe";
-    insert_user(user1);
+    strcpy(user1.name, "John");
+    strcpy(user1.surname, "Doe");
+    create_user(user1, NULL);
 
     user user2;
-    user2.name = "Billy";
-    user2.surname = "Bob";
-    insert_user(user2);
+    strcpy(user2.name, "Billy");
+    strcpy(user2.surname, "Bob");
+    create_user(user2, NULL);
 
     create_server(server_socket, "0.0.0.0", 8001, 10);
     return 0;

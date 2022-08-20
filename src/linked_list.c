@@ -12,8 +12,7 @@ void db_sucess(char *msg)
     current_date = ctime(&t);
     current_date[strcspn(current_date, "\n")] = 0;
     printf("[%s] - ", current_date);
-    printf("\033[0;32mDatabase success: ");
-    printf("\033[0m%s\n", msg);
+    printf("\033[0;36mDatabase success: %s\n\033[0m", msg);
 }
 
 void db_error(char *msg)
@@ -24,8 +23,7 @@ void db_error(char *msg)
     current_date = ctime(&t);
     current_date[strcspn(current_date, "\n")] = 0;
     printf("[%s] - ", current_date);
-    printf("\033[0;31mDatabase error: ");
-    printf("\033[0m%s\n", msg);
+    printf("\033[0;33mDatabase error: %s\n\033[0m", msg);
 }
 
 node_t *create_new_node(unsigned int id, user User)
@@ -41,6 +39,7 @@ void insert_at_head(node_t **head, node_t *node_to_insert)
 {
     node_to_insert->next = *head;
     *head = node_to_insert;
+    db_sucess("Node created");
 }
 
 node_t *find_node(node_t *head, unsigned int id)
@@ -61,6 +60,7 @@ void update_node(node_t *head, unsigned int id, node_t *new_node)
     if (node_to_update != NULL)
     {
         node_to_update = new_node;
+        db_sucess("Node updated");
     }
     else
     {

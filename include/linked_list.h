@@ -12,6 +12,7 @@ typedef struct node
 } node_t;
 
 node_t *create_new_node(unsigned int id, user User);
+void update_node(node_t *head, unsigned int id, node_t *new_node);
 void insert_at_head(node_t **head, node_t *node_to_insert);
 node_t *find_node(node_t *head, unsigned int id);
 void delete_node(node_t *head, unsigned int id);

@@ -78,9 +78,10 @@ void *send_data(void *client_socket)
 {
     int i;
     char request[BUFFER_SIZE];
+    char content[BUFFER_SIZE];
     pthread_t self = pthread_self();
 
-    get_request(*(int *)client_socket, request);
+    get_request(*(int *)client_socket, request, content);
 
     for (i = 0; i < NUM_ROUTES; i++)
     {
@@ -107,6 +108,74 @@ void *send_data(void *client_socket)
                     i++;
                 }
                 get_user_view(client_socket, atoi(id));
+                close(*(int *)client_socket);
+                free(client_socket);
+                pthread_exit(&self);
+            }
+            else if (strstr(request, "POST /users") != NULL)
+            {
+                user User;
+                strcpy(request, strstr(request, "POST /users"));
+                strcpy(content, strstr(content, "name="));
+
+                char *token = strtok(content, "=&");
+
+                while (token != NULL)
+                {
+                    if (strcmp(token, "name") == 0)
+                    {
+                        token = strtok(NULL, "=&");
+                        strcpy(User.name, token);
+                    }
+                    if (strcmp(token, "surname") == 0)
+                    {
+                        token = strtok(NULL, "=&");
+                        strcpy(User.surname, token);
+                    }
+                    token = strtok(NULL, "=&");
+                }
+
+                create_user_view(client_socket, User);
+
+                close(*(int *)client_socket);
+                free(client_socket);
+                pthread_exit(&self);
+            }
+            else if (strstr(request, "PUT /users/") != NULL)
+            {
+                user User;
+                int i = 0;
+                char id[256];
+                char *tmp;
+                strcpy(request, strstr(request, "PUT /users/"));
+                tmp = request;
+                tmp = tmp + strlen("PUT /users/");
+                while (tmp[i] != 'H')
+                {
+                    id[i] = tmp[i];
+                    i++;
+                }
+                strcpy(content, strstr(content, "name="));
+
+                char *token = strtok(content, "=&");
+
+                while (token != NULL)
+                {
+                    if (strcmp(token, "name") == 0)
+                    {
+                        token = strtok(NULL, "=&");
+                        strcpy(User.name, token);
+                    }
+                    if (strcmp(token, "surname") == 0)
+                    {
+                        token = strtok(NULL, "=&");
+                        strcpy(User.surname, token);
+                    }
+                    token = strtok(NULL, "=&");
+                }
+
+                update_user_view(client_socket, atoi(id), User);
+
                 close(*(int *)client_socket);
                 free(client_socket);
                 pthread_exit(&self);
@@ -142,7 +211,7 @@ void *send_data(void *client_socket)
     pthread_exit(&self);
 }
 
-void get_request(int client_socket, char *request)
+void get_request(int client_socket, char *request, char *content)
 {
     int i = 0;
     char client_message[BUFFER_SIZE];
@@ -161,13 +230,18 @@ void get_request(int client_socket, char *request)
         printf("Error code: %d\n", errno);
         exit(1);
     }
-    printf("Client message: %s\n", client_message);
 
     while (client_message[i] != '\n')
     {
         strncat(request, &client_message[i], 1);
         i++;
     }
+
+    if (strstr(client_message, "Content-Type: application/x-www-form-urlencoded") != NULL)
+    {
+        strcpy(content, strstr(client_message, "Content-Type: application/x-www-form-urlencoded"));
+    }
+
     printf("[%s] - ", current_date);
     printf("%s\n", request);
     memset(client_message, 0, sizeof(client_message));
