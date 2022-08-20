@@ -31,7 +31,7 @@ A simple "User" model (`models.h`) with fields "name" and "surname" is implement
 
 ### Endpoints
 
-The endpoints are defined in the `routes.h` file.
+The endpoints are defined in the `routes.h` file. The default port is 8001.
 
 `GET /` - root with "Hello world" message <br>
 `GET /users` - lists all users in .json format <br>

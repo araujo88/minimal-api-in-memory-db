@@ -1,10 +1,10 @@
 version: '1.0'
 services:
-  in-memory-db:
+  v1:
     build:
       context: .
       dockerfile: Dockerfile
     ports:
       - 8001:8001
     volumes:
-      - .:/in-memory-db
+      - .:/v1
