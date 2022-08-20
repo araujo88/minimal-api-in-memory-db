@@ -2,6 +2,7 @@
 #include "../include/views.h"
 #include "../include/routes.h"
 #include "../include/database.h"
+#include "../include/settings.h"
 
 void create_server(int server_socket, char *ip, int port, int max_connections)
 {
@@ -29,8 +30,11 @@ void create_server(int server_socket, char *ip, int port, int max_connections)
 
         check_accept(server_socket, client_socket, (struct sockaddr *)client_address);
 
-        pthread_t t;
-        pthread_create(&t, NULL, send_data, (void *)client_socket);
+        if (check_client_ip(client_socket, (struct sockaddr *)client_address))
+        {
+            pthread_t t;
+            pthread_create(&t, NULL, send_data, (void *)client_socket);
+        }
     }
 }
 
@@ -245,4 +249,39 @@ void get_request(int client_socket, char *request, char *content)
     printf("[%s] - ", current_date);
     printf("%s\n", request);
     memset(client_message, 0, sizeof(client_message));
+}
+
+bool check_client_ip(int *client_socket, struct sockaddr *client_address)
+{
+    int i;
+    struct sockaddr_in *pV4Addr = (struct sockaddr_in *)&client_address;
+    struct in_addr ipAddr = pV4Addr->sin_addr;
+    char client_ip_address[INET_ADDRSTRLEN];
+    char server_message[BUFFER_SIZE];
+
+    char *current_date;
+    time_t t;
+    time(&t);
+    current_date = ctime(&t);
+    current_date[strcspn(current_date, "\n")] = 0;
+
+    inet_ntop(AF_INET, &ipAddr, client_ip_address, INET_ADDRSTRLEN);
+
+    for (i = 0; i < NUM_ALLOWED_HOSTS; i++)
+    {
+        if (strcmp(client_ip_address, ALLOWED_HOSTS[i]) == 0)
+        {
+            return true;
+        }
+    }
+
+    printf("[%s] - ", current_date);
+    printf("HTTP/1.1 403 Forbidden\n");
+
+    sprintf(server_message, "HTTP/1.1 403 Forbidden\nDate: %s\nContent-Type: text/html\nContent-Length: 0\n\n", current_date);
+    send(*(int *)client_socket, &server_message, sizeof(server_message), 0);
+
+    memset(server_message, 0, sizeof(server_message));
+
+    return false;
 }
